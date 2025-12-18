@@ -1,48 +1,101 @@
-;; GNU GENERAL PUBLIC LICENSE
-;; Version 3, 29 June 2007
+;;; init.el --- minimal treesit + eglot + corfu
+;;; GNU GPL v3
 
-;; Languages.el
-;; Things for better programming env (?)
+;; Core
+(setq inhibit-startup-screen t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 
-;; Lisps
+(setq use-package-always-ensure t)
+
+;; Tree-sitter
+(setq treesit-font-lock-level 4)
+
+(setq treesit-language-source-alist
+      '((c        . ("https://github.com/tree-sitter/tree-sitter-c"))
+        (go       . ("https://github.com/tree-sitter/tree-sitter-go"))
+        (clojure  . ("https://github.com/sogaiu/tree-sitter-clojure"))))
+
+(setq major-mode-remap-alist
+      '((c-mode       . c-ts-mode)
+        (go-mode      . go-ts-mode)
+        (clojure-mode . clojure-ts-mode)))
+
+(use-package go-mode)
+(use-package clojure-mode)
+;; c-mode is builtin
+
+
+;; Paredit (Lisps)
 (use-package paredit
-  :ensure t
-  :hook ((clojure-mode . paredit-mode)
-         (scheme-mode . paredit-mode)
-         (clojure-mode . paredit-mode)
-         (emacs-lisp-mode . paredit-mode)
-         (lisp-mode . paredit-mode)
-	 (cider-repl-mode . paredit-mode))
-  :config
-  (define-key global-map (kbd "M-[") 'paredit-wrap-square)
-  (define-key global-map (kbd "M-(") 'paredit-wrap-sexp))
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          scheme-mode
+          clojure-mode
+          clojure-ts-mode
+          cider-repl-mode) . paredit-mode)
+  :bind (("M-[" . paredit-wrap-square)
+         ("M-(" . paredit-wrap-sexp)))
 
-;; Clojure
-(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
-(use-package clojure-mode
-  :ensure t)
-
+;; Clojure tooling
 (use-package cider
-  :ensure t
   :hook (clojure-mode . cider-mode)
   :custom
   (cider-repl-display-help-banner nil))
 
-;; Lisps
-(add-to-list 'auto-mode-alist '("\\.scm\\'" . scheme-mode))
-(add-to-list 'auto-mode-alist '("\\.lisp\\'" . lisp-mode))
+;; LSP (Eglot)
+(use-package eglot
+  :custom
+  (eglot-events-buffer-size 0)   ;; no event spam
+  (eglot-sync-connect nil)
+  :config
+  (add-to-list 'eglot-stay-out-of 'flymake))
 
-;; php
-(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(use-package php-mode
-  :ensure t)
+(add-hook 'c-ts-mode-hook       #'eglot-ensure)
+(add-hook 'go-ts-mode-hook      #'eglot-ensure)
+(add-hook 'clojure-ts-mode-hook #'eglot-ensure)
 
-;; Golang
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-(use-package go-mode
-  :ensure t)
+;; Servers expected:
+;; clangd        -> C
+;; gopls         -> Go
+;; clojure-lsp   -> Clojure
 
-;; html?
-(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-(use-package web-mode
-  :ensure t)
+(use-package cargo-mode)
+(use-package rustic
+  :hook ((rustic-mode . eglot-ensure)
+         (rustic-mode . cargo-minor-mode))
+  :custom
+  (rustic-lsp-client 'eglot)
+  (rustic-format-on-save nil))
+
+;; ====================
+;; Completion (Corfu)
+;; ====================
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preselect-first t))
+
+(setq tab-always-indent 'complete)
+(setq completion-cycle-threshold 3)
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; Git
+(use-package magit
+  :bind ("C-x g" . magit-status))
+
+(use-package forge
+  :after magit)
+
+(use-package with-editor
+  :after magit)

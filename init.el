@@ -18,7 +18,7 @@
 
 
 (require 'package)
-(package-initialize)
+;(package-initialize)
 ;; Definir los repositorios iniciales si no están definidos
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
@@ -43,13 +43,10 @@
   :ensure t)
 
 ;; Theme config 
-(use-package mindre-theme
+(use-package poet-theme
   :ensure t
-  :custom
-  (mindre-use-more-bold nil)
-  (mindre-use-faded-lisp-parens nil)
   :config
-  (load-theme 'mindre t))
+  (load-theme 'poet-dark t))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; yes or no are long words
 
