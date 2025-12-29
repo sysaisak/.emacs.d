@@ -88,6 +88,9 @@
 (load-file (expand-file-name "elisp/programming.el" user-emacs-directory))
 (load-file (expand-file-name "elisp/languages.el" user-emacs-directory))
 
+;; IRC nerd chat
+(load-file (expand-file-name "elisp/irc.el" user-emacs-directory))
+
 ;; Emacs X11 Window Manager ;)
 ;;(load-file (expand-file-name "elisp/exwm.el" user-emacs-directory))
 
@@ -99,7 +102,11 @@
  ;; If there is more than one, they won't work right.
  '(bookmark-bmenu-toggle-filenames nil)
  '(cider-clojure-cli-aliases nil)
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(avy cargo-mode cider consult corfu eat forge go-mode json-mode
+	 kind-icon marginalia nix-mode nix-ts-mode orderless
+	 org-superstar paredit poet-theme rainbow-delimiters rustic
+	 sly vertico)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
