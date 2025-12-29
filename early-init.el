@@ -13,7 +13,7 @@
         tab-line-close-button-show nil) 
 
 
-(setq default-frame-alist '((font . "Aporetic Sans Mono-16")
+(setq default-frame-alist '((font . "Source Code Pro-14")
 			    ;; ()
 			    ))
 
