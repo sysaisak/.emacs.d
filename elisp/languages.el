@@ -15,15 +15,19 @@
 (setq treesit-language-source-alist
       '((c        . ("https://github.com/tree-sitter/tree-sitter-c"))
         (go       . ("https://github.com/tree-sitter/tree-sitter-go"))
-        (clojure  . ("https://github.com/sogaiu/tree-sitter-clojure"))))
+        (clojure  . ("https://github.com/sogaiu/tree-sitter-clojure"))
+	(nix      . ("https://github.com/nix-community/tree-sitter-nix"))))
 
 (setq major-mode-remap-alist
       '((c-mode       . c-ts-mode)
         (go-mode      . go-ts-mode)
-        (clojure-mode . clojure-ts-mode)))
+        (clojure-mode . clojure-ts-mode)
+	(nix-mode     . nix-ts-mode)))
 
 (use-package go-mode)
 (use-package clojure-mode)
+(use-package nix-mode)
+(use-package nix-ts-mode)
 ;; c-mode is builtin
 
 
