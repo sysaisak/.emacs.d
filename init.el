@@ -25,13 +25,18 @@
                          ("elpa" . "https://elpa.gnu.org/packages/")
 			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-(setopt inferior-lisp-program "sbcl")
+(setq inferior-lisp-program "sbcl")
 
 ;; org mode config
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (use-package org-superstar
   :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(setq org-agenda-files '("~/org/calendar.org"
+                         "~/org/university/tasks.org"
+                         "~/org/cpts/roadmap.org"
+                         "~/org/inbox.org"))
+
 
 (use-package compat
   :ensure t)
@@ -73,11 +78,15 @@
   :config
   (which-key-mode))
 
-(setopt scroll-step 1)
-(setopt blink-cursor-interval 0.2)
-(setopt blink-cursor-blinks 0)
-(setopt frame-resize-pixelwise t)
-(setopt eldoc-echo-area-use-multiline-p nil)
+(setq cursor-type 'hbar)  
+(setq-default line-spacing nil)
+(setq cursor-in-non-selected-windows nil)
+(setq cursor-height 100) 
+(setq scroll-step 1)
+(setq blink-cursor-interval 0.2)
+(setq blink-cursor-blinks 0)
+(setq frame-resize-pixelwise t)
+(setq eldoc-echo-area-use-multiline-p nil)
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
@@ -102,11 +111,7 @@
  ;; If there is more than one, they won't work right.
  '(bookmark-bmenu-toggle-filenames nil)
  '(cider-clojure-cli-aliases nil)
- '(package-selected-packages
-   '(avy cargo-mode cider consult corfu eat forge go-mode json-mode
-	 kind-icon marginalia nix-mode nix-ts-mode orderless
-	 org-superstar paredit poet-theme rainbow-delimiters rustic
-	 sly vertico)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
