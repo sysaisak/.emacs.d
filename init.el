@@ -111,7 +111,11 @@
  ;; If there is more than one, they won't work right.
  '(bookmark-bmenu-toggle-filenames nil)
  '(cider-clojure-cli-aliases nil)
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(avy cargo-mode cider consult corfu doom-modeline eat forge go-mode
+	 json-mode kind-icon marginalia nix-mode nix-ts-mode orderless
+	 org-superstar paredit poet-theme rainbow-delimiters rustic
+	 sly vertico web-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
