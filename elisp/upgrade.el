@@ -166,8 +166,8 @@
   (other-window 1))
 
 ;; Keybindings
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
-(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+(global-set-key (kbd "C-x 2") 'moon/split-and-follow-horizontally)
+(global-set-key (kbd "C-x 3") 'moon/split-and-follow-vertically)
 
 (defun moon/ansi-colorize-buffer ()
   "Colorize the current buffer interpreting ANSI color codes."

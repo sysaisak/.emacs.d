@@ -102,13 +102,13 @@
   (which-key-mode))
 
 ;; Theme - load immediately to avoid flash
-(use-package catppuccin-theme
+(use-package doric-themes
   :ensure t
   :demand t
-  :custom
-  (catppuccin-flavor 'frappe)
   :config
-  (load-theme 'catppuccin t))
+  (doric-themes-select 'doric-dark)
+  (load-theme 'doric-dark t)
+  )
 
 ;; rainbow-delimiters - only when needed
 ;; Does not work with mindre-theme

@@ -18,7 +18,6 @@
         (go       "https://github.com/tree-sitter/tree-sitter-go")
         (python   "https://github.com/tree-sitter/tree-sitter-python")
         (clojure  "https://github.com/sogaiu/tree-sitter-clojure")
-        (nix      "https://github.com/nix-community/tree-sitter-nix")
         (bash     "https://github.com/tree-sitter/tree-sitter-bash")
         (json     "https://github.com/tree-sitter/tree-sitter-json")
         (yaml     "https://github.com/tree-sitter/tree-sitter-yaml")
@@ -33,7 +32,6 @@
         (go-mode         . go-ts-mode)
         (python-mode     . python-ts-mode)
         (clojure-mode    . clojure-ts-mode)
-        (nix-mode        . nix-ts-mode)
         (sh-mode         . bash-ts-mode)
         (js-mode         . js-ts-mode)
         (json-mode       . json-ts-mode)
@@ -54,7 +52,7 @@
 ;; ============================================================================
 
 ;; C mode is built-in, just configure it
-(use-package cc-mode
+(use-package c-mode
   :ensure nil  ; Built-in
   :custom
   (c-basic-offset 4)
@@ -65,7 +63,7 @@
 ;; ============================================================================
 
 ;; Python mode is built-in with python-ts-mode
-(use-package python
+(use-package python-mode
   :ensure nil  ; Built-in
   :custom
   (python-indent-offset 4)
@@ -141,20 +139,6 @@
   (cider-eldoc-display-for-symbol-at-point t)
   (cider-prompt-for-symbol nil)
   (nrepl-log-messages nil))  ; Disable nrepl logging
-
-;; ============================================================================
-;; NIX
-;; ============================================================================
-
-(use-package nix-mode
-  :ensure t
-  :defer t
-  :mode "\\.nix\\'")
-
-(use-package nix-ts-mode
-  :ensure t
-  :defer t
-  :mode "\\.nix\\'")
 
 ;; ============================================================================
 ;; JSON/YAML/TOML
