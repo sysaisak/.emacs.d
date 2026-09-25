@@ -1,4 +1,4 @@
-;; GNU GENERAL PUBLIC LICENSE
+;; GNU GENERAL PUBLIC LICENSE  -*- lexical-binding: t; -*-
 ;; Version 3, 29 June 2007
 
 ;; Meimacs IRC configuration - Simple ERC setup

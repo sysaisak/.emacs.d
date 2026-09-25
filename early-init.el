@@ -1,4 +1,4 @@
-;; GNU GENERAL PUBLIC LICENSE
+;; GNU GENERAL PUBLIC LICENSE  -*- lexical-binding: t; -*-
 ;; Version 3, 29 June 2007
 
 ;; Meimacs early initialization
@@ -21,7 +21,7 @@
                   gc-cons-percentage 0.1
                   file-name-handler-alist default-file-name-handler-alist)))
 
-;; Disable package.el early (we initialize it manually in init.el)
+;; Desactiva el inicio temprano de package.el (inicializa en init.el)
 (setq package-enable-at-startup nil)
 
 ;; Prevent frame resizing during startup
@@ -48,10 +48,10 @@
 ;; ;; Configure font efficiently
 (set-face-attribute 'default nil
                     :family "JetBrainsMono NF"
-                    :height 140)
+                    :height 120)
 
 ;; Optional: Set font for fixed-pitch and variable-pitch faces
-(set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 140)
-;;(set-face-attribute 'variable-pitch nil :family "sans-serif" :height 140)
+(set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 120)
+;;(set-face-attribute 'variable-pitch nil :family "sans-serif" :height 120)
 
 

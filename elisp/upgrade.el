@@ -1,4 +1,4 @@
-;; GNU GENERAL PUBLIC LICENSE
+;; GNU GENERAL PUBLIC LICENSE  -*- lexical-binding: t; -*-
 ;; Version 3, 29 June 2007
 
 ;; ============================================================================
@@ -12,7 +12,7 @@
   :custom
   (vertico-cycle t)                      ; Cycle through candidates
   (vertico-count 8)
-;;  (vertico-resize t)                     ; Resize minibuffer dynamically
+  ;;  (vertico-resize t)                     ; Resize minibuffer dynamically
   :init
   (vertico-mode))
 
@@ -40,7 +40,7 @@
   :ensure t
   :demand t  ; Load immediately
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))  ; Cycle between annotation levels
+	      ("M-A" . marginalia-cycle))  ; Cycle between annotation levels
   :custom
   (marginalia-align 'right)           ; Align annotations to right
   (marginalia-max-relative-age 0)     ; Show absolute time
@@ -65,36 +65,41 @@
    ;; Searching - Avoiding M-s conflicts with paredit
    ("C-c r"   . consult-ripgrep)
    ("C-c l"   . consult-line)
-   ("C-c s"   . consult-line)       
+   ("C-c s"   . consult-line)        
    ("C-c L"   . consult-line-multi)
    ("C-c o"   . consult-outline)
    ;; Isearch integration
    :map isearch-mode-map
    ("M-e"     . consult-isearch-history)   
    ("C-c e"   . consult-isearch-history)   
-   ("C-c l"   . consult-line)             
+   ("C-c l"   . consult-line)              
    ("C-c L"   . consult-line-multi))
   :custom
   (consult-narrow-key "<")
   (consult-preview-key 'any)            ; Preview on any key
   :config
-  ;; Optionally configure preview for specific commands
+  ;; Añadida la declaración lexical-binding arriba
+  ;; Preview rápido para cambio de temas
   (consult-customize
    consult-theme
-   :preview-key '(:debounce 0.2 any)
+   :preview-key '(:debounce 0.2 any))
+
+  ;; Preview bajo demanda (M-.) para búsquedas pesadas y fuentes
+  (consult-customize
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-recent-file
-   consult--source-project-recent-file
+   consult-source-bookmark 
+   consult-source-recent-file
+   consult-source-project-recent-file
    :preview-key "M-."))
 
 ;; Embark - contextual actions
 (use-package embark
   :ensure t
   :bind
-  (("C-." . embark-act)           ; Pick an action
-   ("C-;" . embark-dwim)          ; Do What I Mean
-   ("C-h B" . embark-bindings))   ; Alternative to describe-bindings
+  (("C-." . embark-act)		    ; Pick an action
+   ("C-;" . embark-dwim)	    ; Do What I Mean
+   ("C-h B" . embark-bindings))	    ; Alternative to describe-bindings
   :init
   ;; Show Embark actions via which-key
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -175,6 +180,106 @@
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 (global-set-key (kbd "C-c C-a") 'moon/ansi-colorize-buffer)
+
+;; GROFF TOOLS
+;; GROFF TOOLS
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq pdf-view-display-size 'fit-page)
+  (setq pdf-view-center-content t)
+  (setq pdf-view-use-scaling t))
+
+(require 'pdf-view)
+(require 'subr-x)
+
+;; 1. Asociar extensiones para que activen nroff-mode automáticamente
+(add-to-list 'auto-mode-alist '("\\.ms\\'" . nroff-mode))
+(add-to-list 'auto-mode-alist '("\\.mom\\'" . nroff-mode))
+
+;; 2. Separar las banderas dependiendo del tipo de macro
+(defvar moon/groff-ms-flags "-k -m es -ms -t -e -Tpdf"
+  "Flags por defecto para invocar groff en archivos .ms.")
+
+(defvar moon/groff-mom-flags "-k"
+  "Flags por defecto para archivos .mom (usando pdfmom).")
+
+;; 3. Función de compilación inteligente
+(defun moon/groff-compile-to-pdf (&optional flags)
+  "Compila el archivo groff actual a PDF detectando si es ms o mom."
+  (interactive
+   (let* ((ext (file-name-extension (buffer-file-name)))
+          (default-f (if (string= ext "mom") moon/groff-mom-flags moon/groff-ms-flags))
+          (compiler (if (string= ext "mom") "pdfmom" "groff")))
+     (list (read-string (format "Banderas de %s (por defecto '%s'): " compiler default-f)
+                        nil nil default-f))))
+  (when (buffer-file-name)
+    (let* ((file (buffer-file-name))
+           (ext (file-name-extension file))
+           (pdf-file (concat (file-name-sans-extension file) ".pdf"))
+           (is-mom (string= ext "mom"))
+           (default-flags (if is-mom moon/groff-mom-flags moon/groff-ms-flags))
+           (final-flags (if (string-empty-p (or flags "")) default-flags flags))
+           (compiler (if is-mom "pdfmom" "groff"))
+           (cmd (format "%s %s %s > %s"
+                        compiler
+                        final-flags
+                        (shell-quote-argument file)
+                        (shell-quote-argument pdf-file))))
+      (message "Compilando: %s" cmd)
+      (shell-command cmd)
+      (message "Groff Done."))))
+
+;; 4. Refrescar PDF (Sin cambios)
+(defun moon/groff-refresh-pdf-buffer (pdf-file)
+  "Refresca el buffer PDF si está abierto."
+  (let ((pdf-buf (get-file-buffer pdf-file)))
+    (when pdf-buf
+      (with-current-buffer pdf-buf
+        (revert-buffer nil t)
+        (when (fboundp 'pdf-view-redisplay)
+          (pdf-view-redisplay t))))))
+
+;; 5. Compilar y refrescar silenciosamente (Sin cambios lógicos)
+(defun moon/groff-compile-and-revert-silent ()
+  "Compila y recarga el PDF si está abierto."
+  (interactive)
+  (when (buffer-file-name)
+    (let ((pdf-file (concat (file-name-sans-extension (buffer-file-name)) ".pdf")))
+      (moon/groff-compile-to-pdf nil)
+      (moon/groff-refresh-pdf-buffer pdf-file))))
+
+;; 6. Compilar y mostrar PDF (Sin cambios lógicos)
+(defun moon/groff-compile-and-view ()
+  "Compila y abre/enfoca el PDF a la derecha."
+  (interactive)
+  (when (buffer-file-name)
+    (let* ((file (buffer-file-name))
+           (pdf-file (concat (file-name-sans-extension file) ".pdf")))
+      ;; Compilar
+      (moon/groff-compile-and-revert-silent)
+      ;; Abrir PDF
+      (let* ((pdf-buf (find-file-noselect pdf-file))
+             (pdf-win (get-buffer-window pdf-buf)))
+        (if pdf-win
+            (select-window pdf-win)
+          (display-buffer
+           pdf-buf
+           '(display-buffer-in-side-window
+             (side . right)
+             (window-width . 0.5)))
+          (select-window (get-buffer-window pdf-buf)))))))
+
+;; 7. Hooks
+(add-hook
+ 'nroff-mode-hook
+ (lambda ()
+   ;; Compilar al guardar
+   (add-hook 'after-save-hook #'moon/groff-compile-and-revert-silent nil t)
+   ;; Atajos locales
+   (local-set-key (kbd "C-c C-c") #'moon/groff-compile-and-view)
+   (local-set-key (kbd "C-c C-p") #'moon/groff-compile-to-pdf)))
 
 ;; ============================================================================
 ;; OPTIONAL: DASHBOARD (uncomment if desired)

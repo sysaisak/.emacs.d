@@ -1,4 +1,4 @@
-;; Code from systemcrafters
+;; Code from systemcrafters  -*- lexical-binding: t; -*-
 
 (defun efs/exwm-update-class ()
   (exwm-workspace-rename-buffer exwm-class-name))

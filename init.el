@@ -1,4 +1,4 @@
-;; GNU GENERAL PUBLIC LICENSE
+;; GNU GENERAL PUBLIC LICENSE  -*- lexical-binding: t; -*-
 ;; Version 3, 29 June 2007
 
 ;; Meimacs, an emacs starter configuration.
@@ -79,10 +79,13 @@
       blink-cursor-blinks 0
       frame-resize-pixelwise t
       eldoc-echo-area-use-multiline-p nil)
+(setq ring-bell-function 'ignore)
 
 ;; Hooks for prog-mode
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+;; Se necesita para los pdfs, si no esta presente se abren en DocView Mode
+(pdf-tools-install)
 
 ;; ============================================================================
 ;; PACKAGES WITH DEFERRED LOADING
